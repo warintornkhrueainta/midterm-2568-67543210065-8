@@ -3,12 +3,17 @@ const studentService = require('../../business/services/studentService');
 
 class StudentController {
 
-    // GET /api/students
+    // GET /api/students?major=&status=
     async getAllStudents(req, res, next) {
         try {
             const { major, status } = req.query;
-            const result = await studentService.getAllStudents({ major, status });
-            res.json(result);
+
+            const students = await studentService.getAllStudents({ major, status });
+
+            res.status(200).json({
+                success: true,
+                data: students
+            });
         } catch (error) {
             next(error);
         }
@@ -17,9 +22,14 @@ class StudentController {
     // GET /api/students/:id
     async getStudentById(req, res, next) {
         try {
-            const id = parseInt(req.params.id);
+            const { id } = req.params;
+
             const student = await studentService.getStudentById(id);
-            res.json(student);
+
+            res.status(200).json({
+                success: true,
+                data: student
+            });
         } catch (error) {
             next(error);
         }
@@ -28,8 +38,14 @@ class StudentController {
     // POST /api/students
     async createStudent(req, res, next) {
         try {
-            const student = await studentService.createStudent(req.body);
-            res.status(201).json(student);
+            const studentData = req.body;
+
+            const newStudent = await studentService.createStudent(studentData);
+
+            res.status(201).json({
+                success: true,
+                data: newStudent
+            });
         } catch (error) {
             next(error);
         }
@@ -38,9 +54,15 @@ class StudentController {
     // PUT /api/students/:id
     async updateStudent(req, res, next) {
         try {
-            const id = parseInt(req.params.id);
-            const student = await studentService.updateStudent(id, req.body);
-            res.json(student);
+            const { id } = req.params;
+            const updateData = req.body;
+
+            const updatedStudent = await studentService.updateStudent(id, updateData);
+
+            res.status(200).json({
+                success: true,
+                data: updatedStudent
+            });
         } catch (error) {
             next(error);
         }
@@ -49,10 +71,15 @@ class StudentController {
     // PATCH /api/students/:id/gpa
     async updateGPA(req, res, next) {
         try {
-            const id = parseInt(req.params.id);
+            const { id } = req.params;
             const { gpa } = req.body;
-            const student = await studentService.updateGPA(id, gpa);
-            res.json(student);
+
+            const updatedStudent = await studentService.updateGPA(id, gpa);
+
+            res.status(200).json({
+                success: true,
+                data: updatedStudent
+            });
         } catch (error) {
             next(error);
         }
@@ -61,10 +88,15 @@ class StudentController {
     // PATCH /api/students/:id/status
     async updateStatus(req, res, next) {
         try {
-            const id = parseInt(req.params.id);
+            const { id } = req.params;
             const { status } = req.body;
-            const student = await studentService.updateStatus(id, status);
-            res.json(student);
+
+            const updatedStudent = await studentService.updateStatus(id, status);
+
+            res.status(200).json({
+                success: true,
+                data: updatedStudent
+            });
         } catch (error) {
             next(error);
         }
@@ -73,9 +105,14 @@ class StudentController {
     // DELETE /api/students/:id
     async deleteStudent(req, res, next) {
         try {
-            const id = parseInt(req.params.id);
+            const { id } = req.params;
+
             await studentService.deleteStudent(id);
-            res.json({ message: 'Student deleted successfully' });
+
+            res.status(200).json({
+                success: true,
+                message: 'Student deleted successfully'
+            });
         } catch (error) {
             next(error);
         }
