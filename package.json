@@ -1,0 +1,26 @@
+{
+  "name": "student-management-system",
+  "version": "1.0.0",
+  "description": "Student Management System using Layered Architecture (ENGSE207)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "task-board",
+    "monolithic",
+    "express",
+    "sqlite"
+  ],
+  "author": "Warintorn Kuea-inta (67543210065-8)",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.22.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  },
+  "type": "commonjs"
+}

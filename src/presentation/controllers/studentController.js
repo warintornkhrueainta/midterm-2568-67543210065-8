@@ -1,0 +1,85 @@
+// src/presentation/controllers/studentController.js
+const studentService = require('../../business/services/studentService');
+
+class StudentController {
+
+    // GET /api/students
+    async getAllStudents(req, res, next) {
+        try {
+            const { major, status } = req.query;
+            const result = await studentService.getAllStudents({ major, status });
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // GET /api/students/:id
+    async getStudentById(req, res, next) {
+        try {
+            const id = parseInt(req.params.id);
+            const student = await studentService.getStudentById(id);
+            res.json(student);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // POST /api/students
+    async createStudent(req, res, next) {
+        try {
+            const student = await studentService.createStudent(req.body);
+            res.status(201).json(student);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // PUT /api/students/:id
+    async updateStudent(req, res, next) {
+        try {
+            const id = parseInt(req.params.id);
+            const student = await studentService.updateStudent(id, req.body);
+            res.json(student);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // PATCH /api/students/:id/gpa
+    async updateGPA(req, res, next) {
+        try {
+            const id = parseInt(req.params.id);
+            const { gpa } = req.body;
+            const student = await studentService.updateGPA(id, gpa);
+            res.json(student);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // PATCH /api/students/:id/status
+    async updateStatus(req, res, next) {
+        try {
+            const id = parseInt(req.params.id);
+            const { status } = req.body;
+            const student = await studentService.updateStatus(id, status);
+            res.json(student);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // DELETE /api/students/:id
+    async deleteStudent(req, res, next) {
+        try {
+            const id = parseInt(req.params.id);
+            await studentService.deleteStudent(id);
+            res.json({ message: 'Student deleted successfully' });
+        } catch (error) {
+            next(error);
+        }
+    }
+}
+
+module.exports = new StudentController();
