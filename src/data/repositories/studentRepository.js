@@ -6,8 +6,8 @@ class StudentRepository {
     async findAll(major = null, status = null) {
         return new Promise((resolve, reject) => {
             let sql = 'SELECT * FROM students';
-            let params = [];
-            let conditions = [];
+            const params = [];
+            const conditions = [];
 
             if (major) {
                 conditions.push('major = ?');
@@ -32,10 +32,14 @@ class StudentRepository {
 
     async findById(id) {
         return new Promise((resolve, reject) => {
-            db.get('SELECT * FROM students WHERE id = ?', [id], (err, row) => {
-                if (err) reject(err);
-                else resolve(row);
-            });
+            db.get(
+                'SELECT * FROM students WHERE id = ?',
+                [id],
+                (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                }
+            );
         });
     }
 
@@ -48,37 +52,45 @@ class StudentRepository {
                 VALUES (?, ?, ?, ?, ?)
             `;
 
-            db.run(sql, [student_code, first_name, last_name, email, major], function (err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    db.get(
-                        'SELECT * FROM students WHERE id = ?',
-                        [this.lastID],
-                        (err, row) => {
-                            if (err) reject(err);
-                            else resolve(row);
-                        }
-                    );
+            db.run(
+                sql,
+                [student_code, first_name, last_name, email, major],
+                function (err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        db.get(
+                            'SELECT * FROM students WHERE id = ?',
+                            [this.lastID],
+                            (err, row) => {
+                                if (err) reject(err);
+                                else resolve(row);
+                            }
+                        );
+                    }
                 }
-            });
+            );
         });
     }
 
-    // ✅ IMPLEMENTED
     async update(id, studentData) {
-        const { student_code, first_name, last_name, email, major } = studentData;
+        const { first_name, last_name, email, major, gpa, status } = studentData;
 
         return new Promise((resolve, reject) => {
             const sql = `
                 UPDATE students
-                SET student_code = ?, first_name = ?, last_name = ?, email = ?, major = ?
+                SET first_name = ?,
+                    last_name = ?,
+                    email = ?,
+                    major = ?,
+                    gpa = ?,
+                    status = ?
                 WHERE id = ?
             `;
 
             db.run(
                 sql,
-                [student_code, first_name, last_name, email, major, id],
+                [first_name, last_name, email, major, gpa, status, id],
                 function (err) {
                     if (err) {
                         reject(err);
@@ -103,9 +115,8 @@ class StudentRepository {
                 'UPDATE students SET gpa = ? WHERE id = ?',
                 [gpa, id],
                 function (err) {
-                    if (err) {
-                        reject(err);
-                    } else {
+                    if (err) reject(err);
+                    else {
                         db.get(
                             'SELECT * FROM students WHERE id = ?',
                             [id],
@@ -126,9 +137,8 @@ class StudentRepository {
                 'UPDATE students SET status = ? WHERE id = ?',
                 [status, id],
                 function (err) {
-                    if (err) {
-                        reject(err);
-                    } else {
+                    if (err) reject(err);
+                    else {
                         db.get(
                             'SELECT * FROM students WHERE id = ?',
                             [id],
@@ -145,10 +155,14 @@ class StudentRepository {
 
     async delete(id) {
         return new Promise((resolve, reject) => {
-            db.run('DELETE FROM students WHERE id = ?', [id], function (err) {
-                if (err) reject(err);
-                else resolve({ message: 'Student deleted successfully' });
-            });
+            db.run(
+                'DELETE FROM students WHERE id = ?',
+                [id],
+                function (err) {
+                    if (err) reject(err);
+                    else resolve({ deleted: true });
+                }
+            );
         });
     }
 }

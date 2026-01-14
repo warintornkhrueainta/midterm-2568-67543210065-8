@@ -9,11 +9,12 @@ class StudentValidator {
             err.name = 'ValidationError';
             throw err;
         }
+
         return true;
     }
 
     validateStudentCode(code) {
-        // Format: 10 digits
+        // Format: YYXXXXX (10 digits)
         const codePattern = /^\d{10}$/;
 
         if (!codePattern.test(code)) {
@@ -21,6 +22,7 @@ class StudentValidator {
             err.name = 'ValidationError';
             throw err;
         }
+
         return true;
     }
 
@@ -32,6 +34,7 @@ class StudentValidator {
             err.name = 'ValidationError';
             throw err;
         }
+
         return true;
     }
 
@@ -39,10 +42,13 @@ class StudentValidator {
         const validMajors = ['CS', 'SE', 'IT', 'CE', 'DS'];
 
         if (!validMajors.includes(major)) {
-            const err = new Error('Invalid major. Must be one of: CS, SE, IT, CE, DS');
+            const err = new Error(
+                'Invalid major. Must be one of: CS, SE, IT, CE, DS'
+            );
             err.name = 'ValidationError';
             throw err;
         }
+
         return true;
     }
 
@@ -52,6 +58,7 @@ class StudentValidator {
             err.name = 'ValidationError';
             throw err;
         }
+
         return true;
     }
 
@@ -65,6 +72,7 @@ class StudentValidator {
             err.name = 'ValidationError';
             throw err;
         }
+
         return true;
     }
 
@@ -76,7 +84,8 @@ class StudentValidator {
             err.name = 'ValidationError';
             throw err;
         }
-        return true;
+
+        return numId;
     }
 }
 

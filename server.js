@@ -7,6 +7,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // Routes
@@ -16,7 +17,7 @@ app.use('/api/students', studentRoutes);
 app.use(errorHandler);
 
 // Start server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Student Management System running on http://localhost:${PORT}`);
 });

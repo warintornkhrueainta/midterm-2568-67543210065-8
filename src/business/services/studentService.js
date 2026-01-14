@@ -4,59 +4,66 @@ const studentValidator = require('../validators/studentValidator');
 
 class StudentService {
 
-    // GET ALL STUDENTS + STATISTICS
+    // GET ALL
     async getAllStudents({ major = null, status = null } = {}) {
-        // 1. Validate filters (if provided)
+        // 1. Validate filters
         if (major) studentValidator.validateMajor(major);
         if (status) studentValidator.validateStatus(status);
 
-        // 2. เรียก repository
+        // 2. Repository
         const students = await studentRepository.findAll(major, status);
 
-        // 3. คำนวณสถิติ
-        const statistics = {
-            total: students.length,
-            active: students.filter(s => s.status === 'active').length,
-            graduated: students.filter(s => s.status === 'graduated').length,
-            suspended: students.filter(s => s.status === 'suspended').length,
-            avgGPA:
-                students.length === 0
-                    ? 0
-                    : (
-                        students.reduce((sum, s) => sum + (s.gpa || 0), 0) /
-                        students.length
-                      ).toFixed(2)
-        };
+        // 3. Statistics
+        const total = students.length;
+        const active = students.filter(s => s.status === 'active').length;
+        const graduated = students.filter(s => s.status === 'graduated').length;
+        const suspended = students.filter(s => s.status === 'suspended').length;
 
-        // 4. return
-        return { students, statistics };
+        const avgGPA =
+            total === 0
+                ? 0
+                : (
+                    students.reduce((sum, s) => sum + (s.gpa || 0), 0) / total
+                ).toFixed(2);
+
+        // 4. Return
+        return {
+            students,
+            statistics: {
+                total,
+                active,
+                graduated,
+                suspended,
+                avgGPA: Number(avgGPA)
+            }
+        };
     }
 
-    // GET STUDENT BY ID
+    // GET BY ID
     async getStudentById(id) {
         // 1. Validate ID
         studentValidator.validateId(id);
 
-        // 2. เรียก repository
+        // 2. Repository
         const student = await studentRepository.findById(id);
 
-        // 3. ถ้าไม่เจอ
+        // 3. Not found
         if (!student) {
             const err = new Error('Student not found');
             err.name = 'NotFoundError';
             throw err;
         }
 
-        // 4. return student
+        // 4. Return
         return student;
     }
 
-    // CREATE STUDENT
+    // CREATE
     async createStudent(studentData) {
         // 1. Validate student data
         studentValidator.validateStudent(studentData);
 
-        // 2. Validate student_code
+        // 2. Validate student code
         studentValidator.validateStudentCode(studentData.student_code);
 
         // 3. Validate email
@@ -65,20 +72,20 @@ class StudentService {
         // 4. Validate major
         studentValidator.validateMajor(studentData.major);
 
-        // 5. เรียก repository.create()
+        // 5. Repository
         const createdStudent = await studentRepository.create(studentData);
 
-        // 6. return created student
+        // 6. Return
         return createdStudent;
     }
 
-    // UPDATE STUDENT (FULL UPDATE)
+    // UPDATE ALL DATA
     async updateStudent(id, studentData) {
         studentValidator.validateId(id);
         studentValidator.validateStudent(studentData);
 
-        const existing = await studentRepository.findById(id);
-        if (!existing) {
+        const existingStudent = await studentRepository.findById(id);
+        if (!existingStudent) {
             const err = new Error('Student not found');
             err.name = 'NotFoundError';
             throw err;
@@ -92,7 +99,7 @@ class StudentService {
         // 1. Validate GPA
         studentValidator.validateGPA(gpa);
 
-        // 2. ดึงนักศึกษาจาก repository
+        // 2. Check student
         const student = await studentRepository.findById(id);
         if (!student) {
             const err = new Error('Student not found');
@@ -100,16 +107,16 @@ class StudentService {
             throw err;
         }
 
-        // 3. เรียก repository.updateGPA()
+        // 3. Update
         return await studentRepository.updateGPA(id, gpa);
     }
 
     // UPDATE STATUS
     async updateStatus(id, status) {
-        // 1. Validate status
+        // 1. Validate
         studentValidator.validateStatus(status);
 
-        // 2. ดึงนักศึกษา
+        // 2. Check student
         const student = await studentRepository.findById(id);
         if (!student) {
             const err = new Error('Student not found');
@@ -124,15 +131,13 @@ class StudentService {
             throw err;
         }
 
-        // 4. เรียก repository.updateStatus()
+        // 4. Update
         return await studentRepository.updateStatus(id, status);
     }
 
-    // DELETE STUDENT
+    // DELETE
     async deleteStudent(id) {
-        studentValidator.validateId(id);
-
-        // 1. ดึงนักศึกษา
+        // 1. Check student
         const student = await studentRepository.findById(id);
         if (!student) {
             const err = new Error('Student not found');
@@ -147,8 +152,9 @@ class StudentService {
             throw err;
         }
 
-        // 3. เรียก repository.delete()
+        // 3. Delete
         await studentRepository.delete(id);
+        return true;
     }
 }
 
